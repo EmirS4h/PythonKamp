@@ -1,0 +1,36 @@
+# Python'da Veri Tiplerini araştırınız, her bir veri tipi için kendi cümlelerinizle açıklamalar yazınız.
+
+1 - bool    : True veya False değeri alabilen veri tipidir genelde mantıksal kararlar verirken karşımıza çıkar
+2 - int     : Tam sayılar için kullanılır 1,2,3,4,5,6,7,8,9.... gibi
+3 - float   : Kesirli sayılar için kullanılır 1.1,2.2,3.3,4.4,5.5.... gibi
+4 - str     : Çift veya Tek tırnak içerisinde tutulan yazılardır "Emir" veya 'Emir' gibi
+4 - list    : Birden fazla değeri teki bir değişken içerisinde tutmak için kullanılır farklı veri tiplerini barındırabilir [1,2.7,True,False,"Emir"] gibi
+5 - None    : Bir değerin yokluğunu belirtir
+
+
+# Kodlama.io sitesinde değişken olarak kullanıldığını düşündüğünüz verileri, veri tipleriyle birlikte örneklendiriniz.
+
+1 - Kurs tamamlanma yüzdesi         : int
+2 - Yorum sayısı                    : int
+3 - Ödevlerin solundaki tik işareti : bool
+4 - Profildeki çıkış yap butonu     : bool
+
+# Kodlama.io sitesinde şart blokları kullanıldığını düşündüğünüz kısımları örneklendiriniz ve Python dilinde bu örnekleri koda dökünüz.
+
+1 - Profil kısmındaki çıkış yap butonu
+
+    # Eğer kullanıcı giriş yapmış ise buton Çıkış yap ile değiştirilir
+    if user.is_logged_in():
+        return "Çıkış yap"
+    # Eğer giriş yapılmamış ise Giriş yap yazabilir
+    else:
+        return "Giriş yap"
+    
+2 - Ödevlerin tamamlanma durumu Tik işareti
+
+    # Eğer kullanıcı ödevi tamamladıysa ödevin yanına Tik işareti konur
+    if user.completed_homework():
+        return "Tik işareti"
+    # Tamamlamamış ise boş bırakılır
+    else:
+    return "Boş işaret"
