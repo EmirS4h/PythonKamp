@@ -3,6 +3,7 @@ from test_saucedemo import TestSauceDemo
 
 def main():
     test_class = TestSauceDemo()
+    print()
     print("----- Test Sauce Demo'ya Hoşgeldiniz -----")
     test_class.avaliable_commands()
     while True:

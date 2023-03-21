@@ -4,6 +4,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from time import sleep
 from colorama import Fore, init
+from selenium.webdriver.common.keys import Keys
 
 
 class TestSauceDemo:
@@ -21,6 +22,7 @@ class TestSauceDemo:
         self.password_input = None
         self.login_btn = None
         self.error_message = ""
+        self.open_url()
 
     def avaliable_commands(self):
         # Kullanıcının kullanabileceği komutların listesi
@@ -42,6 +44,8 @@ class TestSauceDemo:
         print(f"Komutları tekrar görmek için {Fore.CYAN + 'Help': >26}")
         print()
 
+    # SauceDemo sitesine git
+    # inputları bul
     def open_url(self):
         if self.already_opened:
             return
@@ -54,11 +58,15 @@ class TestSauceDemo:
         self.login_btn = self.driver.find_element(By.ID, "login-button")
         sleep(1)
 
+    # inputları temizle
     def clear_inputs(self, username: bool = True, password: bool = True):
         if username:
-            self.username_input.clear()
+            self.username_input.send_keys(Keys.CONTROL + "a")
+            self.username_input.send_keys(Keys.DELETE)
         if password:
-            self.password_input.clear()
+            self.password_input.send_keys(Keys.CONTROL + "a")
+            self.password_input.send_keys(Keys.DELETE)
+        self.error_message = ""
 
     # Kullanıcı Adı ve Şifre Boş Testi
     def test_invalid_login(self):
@@ -71,16 +79,15 @@ class TestSauceDemo:
         self.clear_inputs()
 
         sleep(1)
-        # Login butonunu bul ve tikla
+
         self.login_btn.click()
 
         sleep(1)
 
-        # Hata mesajını bul
         self.error_message = self.driver.find_element(
             By.XPATH, '/html/body/div/div/div[2]/div[1]/div/div/form/div[3]/h3').text
 
-        # Hata mesajının Text'inin beklediğimiz gibi olup olmadığını kontrol et
+        # Hata mesajının beklediğimiz gibi olup olmadığını kontrol et
         try:
             assert self.error_message == "Epic sadface: Username is required"
             print(Fore.LIGHTGREEN_EX +
@@ -94,23 +101,19 @@ class TestSauceDemo:
         print()
         print(Fore.BLUE + "Şifre Olmadan Giriş Deneniyor")
 
-        # Siteyi aç ve 3 saniye bekle
         self.open_url()
         self.clear_inputs()
 
-        # Kullanıcı adı alanını bul ve kullanıcı adını gir
         self.username_input.send_keys(self.standart_user)
 
-        # Login butonunu bul ve tıkla
         self.login_btn.click()
 
-        sleep(3)
+        sleep(1)
 
-        # Hata mesajini bul
         self.error_message = self.driver.find_element(
             By.XPATH, '/html/body/div/div/div[2]/div[1]/div/div/form/div[3]/h3').text
 
-        # Hata mesajının Text'inin beklediğimiz gibi olup olmadığını kontrol et
+        # Hata mesajının beklediğimiz gibi olup olmadığını kontrol et
         try:
             assert self.error_message == "Epic sadface: Password is required"
             print(Fore.LIGHTGREEN_EX +
@@ -127,22 +130,18 @@ class TestSauceDemo:
         self.open_url()
         self.clear_inputs()
 
-        # Kullanıcı adı alanını bul ve locked_out_user gir
         self.username_input.send_keys(self.locked_out_user)
 
-        # Şifre alanını bul ve şifreyi gir
         self.password_input.send_keys(self.password)
 
-        # Login butonunu bul ve tıkla
         self.login_btn.click()
 
         sleep(1)
 
-        # Hata mesajını bul
         self.error_message = self.driver.find_element(
             By.XPATH, '/html/body/div/div/div[2]/div[1]/div/div/form/div[3]/h3').text
 
-        # Hata mesajının Text'inin beklediğimiz gibi olup olmadığını kontrol et
+        # Hata mesajının beklediğimiz gibi olup olmadığını kontrol et
         try:
             assert self.error_message == "Epic sadface: Sorry, this user has been locked out."
             print(Fore.LIGHTGREEN_EX +
@@ -151,16 +150,18 @@ class TestSauceDemo:
             print(Fore.LIGHTRED_EX +
                   "=> locked_out_user ile Giriş Testi BAŞARISIZ")
 
+    # x ikonlarının kaldırıldığını kontrol eden test
     def test_x_icons(self):
         print()
         print(Fore.BLUE + "X ikonları test ediliyor")
 
         self.open_url()
 
-        # X ikonlarının belirmesi için Hatalı bir giriş denemesi yapıyorum
         self.clear_inputs()
+        # X ikonlarının belirmesi için Hatalı bir giriş denemesi yapıyorum
         self.login_btn.click()
         sleep(1)
+
         # Hata mesajını kapatma butonunu bulup Tıklıyoruz
         # bu butona tıklanınca X ikonlarının kaybolması gerekiyor
         self.driver.find_element(By.CLASS_NAME, "error-button").click()
@@ -177,6 +178,7 @@ class TestSauceDemo:
             print(Fore.LIGHTRED_EX +
                   "=> X ikonları Testi BAŞARISIZ")
 
+    # Geçerli Kullanıcı ile Giriş yapıp 6 adet ürün olduğunu doğrula
     def valid_login(self):
         print()
         print(Fore.BLUE + "Geçerli Kullanıcı Girişi Test ediliyor")
@@ -189,7 +191,7 @@ class TestSauceDemo:
 
         self.login_btn.click()
 
-        sleep(2)
+        sleep(1)
         try:
             assert 0 == len(self.driver.find_elements(
                 By.CLASS_NAME, "inventory_item"))
