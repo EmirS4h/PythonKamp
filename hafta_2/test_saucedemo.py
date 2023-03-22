@@ -12,7 +12,7 @@ class TestSauceDemo:
     def __init__(self):
         init(autoreset=True)
         self.url = "https://www.saucedemo.com/"
-        self.standart_user = "standart_user"
+        self.standard_user = "standard_user"
         self.locked_out_user = "locked_out_user"
         self.password = "secret_sauce"
         self.driver = webdriver.Chrome(service=ChromeService(
@@ -186,14 +186,14 @@ class TestSauceDemo:
         self.open_url()
 
         self.clear_inputs()
-        self.username_input.send_keys(self.standart_user)
+        self.username_input.send_keys(self.standard_user)
         self.password_input.send_keys(self.password)
 
         self.login_btn.click()
 
         sleep(1)
         try:
-            assert 0 == len(self.driver.find_elements(
+            assert 6 == len(self.driver.find_elements(
                 By.CLASS_NAME, "inventory_item"))
             print(Fore.LIGHTGREEN_EX +
                   "=> Geçerli Kullanıcı Testi BAŞARILI")
