@@ -1,8 +1,8 @@
-from test_saucedemo import TestSauceDemo
+from saucedemo import SauceDemo
 
 
 def main():
-    test_class = TestSauceDemo()
+    test_class = SauceDemo()
     print()
     print("----- Test Sauce Demo'ya Hoşgeldiniz -----")
     test_class.avaliable_commands()

@@ -9,7 +9,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from colorama import Fore, init
 
 
-class TestSauceDemo:
+class SauceDemo:
 
     def __init__(self):
         init(autoreset=True)
