@@ -9,3 +9,5 @@ Eklediğim testler:
 
 
 ## Bütün Testler
+
+![all_tests](./all_tests.PNG)
