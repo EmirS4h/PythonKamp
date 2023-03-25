@@ -1,10 +1,12 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
-from time import sleep
-from colorama import Fore, init
 from selenium.webdriver.common.keys import Keys
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.common.action_chains import ActionChains
+from colorama import Fore, init
 
 
 class TestSauceDemo:
@@ -22,6 +24,7 @@ class TestSauceDemo:
         self.password_input = None
         self.login_btn = None
         self.error_message = ""
+        self.actions = ActionChains(self.driver)
         self.open_url()
 
     def avaliable_commands(self):
@@ -52,14 +55,16 @@ class TestSauceDemo:
         self.driver.maximize_window()
         self.driver.get(self.url)
         self.already_opened = True
-        sleep(2)
+        # Username alanı bulunana kadar bekle
+        # En fazla 10 saniye bekler
+        WebDriverWait(self.driver, 10).until(
+            expected_conditions.visibility_of_element_located((By.ID, "user-name")))
         self.username_input = self.driver.find_element(By.ID, "user-name")
         self.password_input = self.driver.find_element(By.ID, "password")
         self.login_btn = self.driver.find_element(By.ID, "login-button")
-        sleep(1)
 
-    # inputları temizle
-    def clear_inputs(self, username: bool = True, password: bool = True):
+    # inputları ve actions temizle
+    def clear(self, username: bool = True, password: bool = True):
         if username:
             self.username_input.send_keys(Keys.CONTROL + "a")
             self.username_input.send_keys(Keys.DELETE)
@@ -67,6 +72,7 @@ class TestSauceDemo:
             self.password_input.send_keys(Keys.CONTROL + "a")
             self.password_input.send_keys(Keys.DELETE)
         self.error_message = ""
+        self.actions.reset_actions()
 
     # Kullanıcı Adı ve Şifre Boş Testi
     def test_invalid_login(self):
@@ -76,13 +82,9 @@ class TestSauceDemo:
         # Siteyi aç ve tamamen yüklenmesi için 3 saniye bekle
         self.open_url()
 
-        self.clear_inputs()
-
-        sleep(1)
+        self.clear()
 
         self.login_btn.click()
-
-        sleep(1)
 
         self.error_message = self.driver.find_element(
             By.XPATH, '/html/body/div/div/div[2]/div[1]/div/div/form/div[3]/h3').text
@@ -102,13 +104,11 @@ class TestSauceDemo:
         print(Fore.BLUE + "Şifre Olmadan Giriş Deneniyor")
 
         self.open_url()
-        self.clear_inputs()
+        self.clear()
 
-        self.username_input.send_keys(self.standart_user)
+        self.username_input.send_keys(self.standard_user)
 
         self.login_btn.click()
-
-        sleep(1)
 
         self.error_message = self.driver.find_element(
             By.XPATH, '/html/body/div/div/div[2]/div[1]/div/div/form/div[3]/h3').text
@@ -128,15 +128,14 @@ class TestSauceDemo:
         print(Fore.BLUE + "locked_out_user ile giriş yapımı deneniyor")
 
         self.open_url()
-        self.clear_inputs()
+        self.clear()
 
-        self.username_input.send_keys(self.locked_out_user)
-
-        self.password_input.send_keys(self.password)
+        self.actions.send_keys_to_element(
+            self.username_input, self.locked_out_user)
+        self.actions.send_keys_to_element(self.password_input, self.password)
+        self.actions.perform()
 
         self.login_btn.click()
-
-        sleep(1)
 
         self.error_message = self.driver.find_element(
             By.XPATH, '/html/body/div/div/div[2]/div[1]/div/div/form/div[3]/h3').text
@@ -157,15 +156,13 @@ class TestSauceDemo:
 
         self.open_url()
 
-        self.clear_inputs()
+        self.clear()
         # X ikonlarının belirmesi için Hatalı bir giriş denemesi yapıyorum
         self.login_btn.click()
-        sleep(1)
 
         # Hata mesajını kapatma butonunu bulup Tıklıyoruz
         # bu butona tıklanınca X ikonlarının kaybolması gerekiyor
         self.driver.find_element(By.CLASS_NAME, "error-button").click()
-        sleep(1)
 
         # X ikonu varmı diye kontrol ediyoruz
         # Olmaması gerekiyor
@@ -179,19 +176,21 @@ class TestSauceDemo:
                   "=> X ikonları Testi BAŞARISIZ")
 
     # Geçerli Kullanıcı ile Giriş yapıp 6 adet ürün olduğunu doğrula
-    def valid_login(self):
+    def test_valid_login(self):
         print()
         print(Fore.BLUE + "Geçerli Kullanıcı Girişi Test ediliyor")
 
         self.open_url()
 
-        self.clear_inputs()
-        self.username_input.send_keys(self.standard_user)
-        self.password_input.send_keys(self.password)
+        self.clear()
+
+        self.actions.send_keys_to_element(
+            self.username_input, self.standard_user)
+        self.actions.send_keys_to_element(self.password_input, self.password)
+        self.actions.perform()
 
         self.login_btn.click()
 
-        sleep(1)
         try:
             assert 6 == len(self.driver.find_elements(
                 By.CLASS_NAME, "inventory_item"))
@@ -206,4 +205,4 @@ class TestSauceDemo:
         self.test_invalid_password()
         self.test_locked_out_user()
         self.test_x_icons()
-        self.valid_login()
+        self.test_valid_login()
