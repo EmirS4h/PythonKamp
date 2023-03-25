@@ -11,15 +11,16 @@ import pytest
 
 
 class Test_SauceDemo:
+    driver = webdriver.Chrome(service=ChromeService(
+        ChromeDriverManager().install()))
+    driver.maximize_window()
 
     # her testten önce calısır
+
     def setup_method(self):
         self.standard_user = "standard_user"
         self.locked_out_user = "locked_out_user"
         self.password = "secret_sauce"
-        self.driver = webdriver.Chrome(service=ChromeService(
-            ChromeDriverManager().install()))
-        self.driver.maximize_window()
         self.driver.get("https://www.saucedemo.com/")
         self.actions = ActionChains(self.driver)
         WebDriverWait(self.driver, 5).until(
@@ -34,7 +35,6 @@ class Test_SauceDemo:
 
     def teardown_method(self):
         self.actions.release()
-        self.driver.quit()
 
     def login(self):
         self.username_input.send_keys(self.standard_user)
