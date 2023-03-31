@@ -8,7 +8,6 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.common.action_chains import ActionChains
 from colorama import Fore, init
 
-
 class SauceDemo:
 
     def __init__(self):

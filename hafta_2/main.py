@@ -1,4 +1,5 @@
 from saucedemo import SauceDemo
+import csv
 
 
 def main():
@@ -34,4 +35,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    with open("invalid_login.csv") as csv_file:
+        reader = csv.reader(csv_file, delimiter=",")
+        for row in reader:
+            print(row)

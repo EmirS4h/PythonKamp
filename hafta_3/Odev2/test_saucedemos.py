@@ -1,3 +1,4 @@
+from time import sleep
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
@@ -8,12 +9,13 @@ from selenium.webdriver.common.action_chains import ActionChains
 from pathlib import Path
 from datetime import date
 import pytest
+import csv
 
 
 class Test_SauceDemo:
-    driver = webdriver.Chrome(service=ChromeService(
-        ChromeDriverManager().install()))
-    driver.maximize_window()
+    # driver = webdriver.Chrome(service=ChromeService(
+    #     ChromeDriverManager().install()))
+    # driver.maximize_window()
 
     # her testten önce calısır
 
@@ -41,6 +43,11 @@ class Test_SauceDemo:
         self.password_input.send_keys(self.password)
 
         self.login_btn.click()
+
+    def get_data():
+        reader = csv.reader("./data/invalid_login.csv")
+        for data in reader:
+            print(data)
 
     @pytest.mark.parametrize("password", [("12345678"), ("kullanici adi"), ("bir iki uc dort bes")])
     def test_blank_username_login(self, password):
@@ -129,3 +136,65 @@ class Test_SauceDemo:
             f"{self.folder_path}/shopping-cart-badge.png")
         assert "1" == self.driver.find_element(
             By.CLASS_NAME, "shopping_cart_badge").text
+
+    @pytest.mark.parametrize("bir,iki,uc,dort,bes", [("param1", "param2", "param3", "param4", "param5")])
+    def test_parametrize(self, bir, iki, uc, dort, bes):
+        l = []
+        l.append(bir)
+        l.append(iki)
+        l.append(uc)
+        l.append(dort)
+        l.append(bes)
+        print(l)
+        print()
+
+    def test_wrong_image(self):
+        self.username_input.send_keys("problem_user")
+        self.password_input.send_keys(self.password)
+        self.login_btn.click()
+
+        sleep(1)
+        img1 = self.driver.find_element(
+            By.CSS_SELECTOR, '[alt="Sauce Labs Backpack"]')
+        img1_src = img1.get_attribute("src")
+        img1.click()
+        sleep(1)
+        img2_src = self.driver.find_element(
+            By.CSS_SELECTOR, '[alt="Sauce Labs Fleece Jacket"]').get_attribute("src")
+
+        assert not img1_src == img2_src
+
+    def test_all_images(self):
+        self.username_input.send_keys("problem_user")
+        self.password_input.send_keys(self.password)
+        self.login_btn.click()
+
+        sleep(1)
+        a_tags_with_img = self.driver.find_elements(By.XPATH, '//a[img]')
+
+        img_src_tuples = []
+
+        for i in range(len(a_tags_with_img)):
+            a_tag = a_tags_with_img[0]
+            img_tag = a_tag.find_element(By.TAG_NAME, 'img')
+            img_src = img_tag.get_attribute('src')
+
+            img_tag.click()
+
+            next_img_tag = self.driver.find_element(By.TAG_NAME, 'img')
+            next_img_src = next_img_tag.get_attribute('src')
+
+            img_src_tuples.append((img_src, next_img_src))
+
+            self.driver.back()
+
+            a_tags_with_img = self.driver.find_elements(
+                By.XPATH, '//a[img]')[i+1:]
+
+        for src in img_src_tuples:
+            assert not src[0] == src[1]
+
+    def test_buttons(self):
+        self.login()
+
+        assert 6 == len(self.driver.find_elements(By.CLASS_NAME, "btn"))
